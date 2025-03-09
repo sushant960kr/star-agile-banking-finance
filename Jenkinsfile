@@ -16,6 +16,24 @@ pipeline {
                 }
             }
         }
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    sh "echo \$PASS | docker login -u \$USER --password-stdin"
+     		    
+
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh 'docker push sushant960kr/staragile:v1'
+                }
+            }
+        }
+
          
         
      stage('Deploy') {
