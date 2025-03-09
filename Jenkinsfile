@@ -10,10 +10,7 @@ pipeline {
         }
         stage('Build docker image'){
             steps{
-                script{
-                    sh 'docker build -t sushant960kr/newimage .'
-                    
-                }
+                sh 'docker build -t sushant960kr/newimage .'
             }
         }
         stage('Docker Login') {
