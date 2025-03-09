@@ -4,7 +4,7 @@ pipeline {
         stage('build project'){
             steps{
                 git url:'https://github.com/sushant960kr/star-agile-banking-finance.git', branch: "master"
-                sh 'mvn clean package'
+                
               
             }
         }
@@ -12,7 +12,7 @@ pipeline {
             steps{
                 script{
                     sh 'docker build -t sushant960kr/newimage .'
-                    sh 'docker images'
+                    
                 }
             }
         }
