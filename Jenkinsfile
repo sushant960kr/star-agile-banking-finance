@@ -1,22 +1,22 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_IMAGE = "sushant960kr/staragile:v1"
-        GIT_REPO = "https://github.com/sushant960kr/star-agile-banking-finance.git"
-        CONTAINER_NAME = "my-first-container"
-    }
-
-    stages {
-        stage('Git Clone') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github-creds', passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
-                    git url: "https://${GIT_USER}:${GIT_PASS}@github.com/sushant960kr/star-agile-banking-finance.git", branch: "master"
+    stages{
+        stage('build project'){
+            steps{
+                git url:'https://github.com/akshu20791/pro1/', branch: "master"
+                sh 'mvn clean package'
+              
+            }
+        }
+        stage('Build docker image'){
+            steps{
+                script{
+                    sh 'docker build -t sushant960kr/staragile:v1.'
+                    sh 'docker images'
                 }
             }
         }
-
-        stage('Build Docker Image') {
+	stage('Build Docker Image') {
             steps {
                 script {
                     sh "docker build -t sushant960kr/staragile:v1 ."
@@ -43,16 +43,14 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+         
+        
+     stage('Deploy') {
             steps {
-                script {
-                    
-
-                    // Run new container
-                    
-		    sh 'sudo docker run -d --name my-first-container -p 8083:8080 sushant960kr/staragile:v1'
+                sh 'sudo docker run -itd --name My-first-containe21211 -p 8083:8081 sushant960kr/staragile:v1'
+                  
                 }
             }
-        }
+        
     }
 }
