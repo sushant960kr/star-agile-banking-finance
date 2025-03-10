@@ -8,14 +8,7 @@ pipeline {
               
             }
         }
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker build -t sushant960kr/staragile:v1.'
-                    sh 'docker images'
-                }
-            }
-        }
+
 	stage('Build Docker Image') {
             steps {
                 script {
