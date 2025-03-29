@@ -3,7 +3,7 @@ pipeline {
     stages{
         stage('build project'){
             steps{
-                git url:'https://github.com/sushant960kr/', branch: "master"
+                git branch: 'master', url: 'https://github.com/sushant960kr/repository-name.git'
                 sh 'mvn clean package'
               
             }
