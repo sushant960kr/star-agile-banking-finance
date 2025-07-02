@@ -5,17 +5,12 @@ pipeline {
         DOCKERHUB_USERNAME = 'sushant960kr'
         IMAGE_NAME = 'staragileprojectfinance'
         IMAGE_TAG = 'v1'
+        CONTAINER_NAME = 'My-first-containe21211'
+        HOST_PORT = '8083'
+        CONTAINER_PORT = '8081'
     }
 
     stages {
-        stage('Clone Project') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-                    git url: "https://${GIT_USER}:${GIT_TOKEN}@github.com/sushant960kr/star-agile-banking-finance.git", branch: 'master'
-                }
-            }
-        }
-
         stage('Build Project') {
             steps {
                 sh 'mvn clean package'
@@ -24,10 +19,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "docker build -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} ."
-                    sh "docker images"
-                }
+                sh "docker build -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh "docker images"
             }
         }
 
@@ -40,10 +33,10 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Container') {
             steps {
-                sh "docker rm -f My-first-containe21211 || true"
-                sh "docker run -itd --name My-first-containe21211 -p 8083:8081 ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+                sh "docker rm -f ${CONTAINER_NAME} || true"
+                sh "docker run -itd --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
     }
@@ -53,7 +46,7 @@ pipeline {
             echo "✅ Deployment completed successfully!"
         }
         failure {
-            echo "❌ Build failed. Please check above logs."
+            echo "❌ Build failed. Please check logs above."
         }
     }
 }
