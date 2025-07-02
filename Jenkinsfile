@@ -1,37 +1,59 @@
 pipeline {
     agent any
-    stages{
-        stage('build project'){
-            steps{
-                git branch: 'master', url: 'https://github.com/sushant960kr/repository-name.git'
+
+    environment {
+        DOCKERHUB_USERNAME = 'sushant960kr'
+        IMAGE_NAME = 'staragileprojectfinance'
+        IMAGE_TAG = 'v1'
+    }
+
+    stages {
+        stage('Clone Project') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                    git url: "https://${GIT_USER}:${GIT_TOKEN}@github.com/sushant960kr/repository-name.git", branch: 'master'
+                }
+            }
+        }
+
+        stage('Build Project') {
+            steps {
                 sh 'mvn clean package'
-              
             }
         }
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker build -t sushant960kr/staragileprojectfinance:v1 .'
-                    sh 'docker images'
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} ."
+                    sh "docker images"
                 }
             }
         }
-        stage('Docker Login') {
+
+        stage('Docker Login & Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh "docker push sushant960kr/staragileprojectfinance:v1"
+                    sh "docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
-         
-        
-     stage('Deploy') {
+
+        stage('Deploy') {
             steps {
-                sh 'sudo docker run -itd --name My-first-containe21211 -p 8083:8081 sushant960kr/staragileprojectfinance:v1'
-                  
-                }
+                sh "docker rm -f My-first-containe21211 || true"
+                sh "docker run -itd --name My-first-containe21211 -p 8083:8081 ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
-        
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment completed successfully!"
+        }
+        failure {
+            echo "❌ Build failed. Please check above logs."
+        }
     }
 }
