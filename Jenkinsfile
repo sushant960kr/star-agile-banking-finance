@@ -11,7 +11,7 @@ pipeline {
         stage('Clone Project') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-                    git url: "https://${GIT_USER}:${GIT_TOKEN}@github.com/sushant960kr/repository-name.git", branch: 'master'
+                    git url: "https://${GIT_USER}:${GIT_TOKEN}@github.com/sushant960kr/star-agile-banking-finance.git", branch: 'master'
                 }
             }
         }
